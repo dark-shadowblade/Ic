@@ -42,9 +42,6 @@
         <!-- URL will appear here as clickable link -->
     </p>
     
-    <h3>Preview in Iframe:</h3>
-    <div id="iframeContainer"></div>
-    
     <script>
         // Function to encode a string into Base64
         function encodeBase64(str) {
@@ -85,15 +82,7 @@
             // Set a timeout to close the new window after 10 seconds
             setTimeout(function() {
                 newWindow.close();
-            }, 6000); // 10000 ms = 10 seconds
-
-            // Optionally, create an iframe to display the generated URL
-            var iframe = document.createElement('iframe');
-            iframe.src = resultURL;
-            iframe.width = "100%";
-            iframe.height = "600px";
-            document.getElementById("iframeContainer").innerHTML = "";  // Clear previous iframe
-            document.getElementById("iframeContainer").appendChild(iframe);
+            }, 10000); // 10000 ms = 10 seconds
         }
 
         // Function to change the last 4 digits of the second application number
