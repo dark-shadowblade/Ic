@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Number URL Generator</title>
+</head>
+<body>
+    <h1>Application Number URL Generator</h1>
+    
+    <label for="appNumber1">Enter First Application Number:</label>
+    <input type="text" id="appNumber1" placeholder="Enter first application number">
+    <br><br>
+    
+    <label for="appNumber2">Enter Second Application Number:</label>
+    <div style="display: flex; align-items: center;">
+        <input type="text" id="appNumber2" placeholder="Enter second application number" style="width: 250px;">
+        <button onclick="changeLastFourDigits(-1)">-</button>
+        <button onclick="changeLastFourDigits(1)">+</button>
+    </div>
+    <br><br>
+    
+    <button onclick="generateURL()">Generate URL</button>
+    
+    <h3>Generated URL:</h3>
+    <p id="resultURL">
+        <!-- URL will appear here as clickable link -->
+    </p>
+    
+    <h3>Preview in Iframe:</h3>
+    <div id="iframeContainer"></div>
+    
+    <script>
+        // Function to encode a string into Base64
+        function encodeBase64(str) {
+            return btoa(str);  // btoa() encodes a string in Base64
+        }
+
+        // Function to generate the URL with encoded application numbers
+        function generateURL() {
+            // Get the application numbers from input fields
+            var appNumber1 = document.getElementById("appNumber1").value;
+            var appNumber2 = document.getElementById("appNumber2").value;
+
+            // Ensure both application numbers are entered
+            if (!appNumber1 || !appNumber2) {
+                alert("Please enter both application numbers.");
+                return;
+            }
+
+            // Encode the first application number
+            var encodedPart1 = encodeBase64(appNumber1);
+
+            // Encode the second application number
+            var encodedPart2 = encodeBase64(appNumber2);
+
+            // Construct the URL using the encoded parts and separator "JTJj"
+            var resultURL = "https://edistrict.up.gov.in/edistrictup/certVerify.aspx?application_no=" + encodedPart1 + "JTJj" + encodedPart2;
+
+            // Display the generated URL as a clickable link
+            var resultURLText = `<a href="${resultURL}" target="_blank">${resultURL}</a>`;
+            document.getElementById("resultURL").innerHTML = resultURLText;
+
+            // Create an iframe to display the URL
+            var iframeContainer = document.getElementById("iframeContainer");
+            iframeContainer.innerHTML = ''; // Clear any existing iframe
+            var iframe = document.createElement('iframe');
+            iframe.src = resultURL;
+            iframe.width = "100%";
+            iframe.height = "500px";
+            iframe.frameBorder = "0";
+            iframeContainer.appendChild(iframe);  // Append the iframe to the container
+        }
+
+        // Function to change the last 4 digits of the second application number
+        function changeLastFourDigits(change) {
+            var appNumber2 = document.getElementById("appNumber2").value;
+            
+            // Ensure the second application number has at least 4 digits
+            if (appNumber2.length >= 4) {
+                var lastFourDigits = appNumber2.slice(-4); // Get the last 4 digits
+                var newLastFour = parseInt(lastFourDigits) + change; // Add or subtract the change
+
+                // Ensure the new last 4 digits stay within the valid range
+                if (newLastFour < 0) newLastFour = 9999;  // If less than 0, wrap around to 9999
+                if (newLastFour > 9999) newLastFour = 0;  // If more than 9999, wrap around to 0
+
+                // Format the last four digits to always show 4 digits (e.g., 0001, 0099)
+                newLastFour = newLastFour.toString().padStart(4, '0');
+
+                // Update the full application number with the new last four digits
+                var newAppNumber2 = appNumber2.slice(0, -4) + newLastFour;
+                document.getElementById("appNumber2").value = newAppNumber2;  // Update the input field
+            } else {
+                alert("The second application number must have at least 4 digits.");
+            }
+        }
+    </script>
+
+</body>
+</html>
