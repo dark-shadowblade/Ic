@@ -4,6 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application Number URL Generator</title>
+    <style>
+        /* Make the buttons bigger */
+        button {
+            font-size: 18px;  /* Increase font size */
+            padding: 40px 40px;  /* Increase button padding */
+            margin: 5px;  /* Space between buttons */
+            cursor: pointer;  /* Change cursor to pointer */
+            border: none;
+            background-color: #ADD8E6;  /* Green background */
+            color: white;
+            border-radius: 5px;  /* Rounded corners */
+        }
+
+        button:hover {
+            background-color: #45a049;  /* Darker green on hover */
+        }
+    </style>
 </head>
 <body>
     <h1>Application Number URL Generator</h1>
@@ -13,14 +30,12 @@
     <br><br>
     
     <label for="appNumber2">Enter Second Application Number:</label>
-    <div style="display: flex; align-items: center;">
-        <input type="text" id="appNumber2" placeholder="Enter second application number" style="width: 250px;">
-        <button onclick="changeLastFourDigits(-1)">-</button>
-        <button onclick="changeLastFourDigits(1)">+</button>
-    </div>
+    <input type="text" id="appNumber2" placeholder="Enter second application number" style="width: 250px;">
     <br><br>
     
-    <button onclick="generateURL()">Generate URL</button>
+    <button onclick="changeLastFourDigits(1)">+</button>
+    <button onclick="changeLastFourDigits(-1)">-</button>
+    <button onclick="generateURL()">.</button>
     
     <h3>Generated URL:</h3>
     <p id="resultURL">
@@ -48,28 +63,21 @@
                 return;
             }
 
-            // Encode the first application number
-            var encodedPart1 = encodeBase64(appNumber1);
+            // If the second application number is too short (less than 4 digits), handle it
+            if (appNumber2.length < 4) {
+                alert("The second application number must have at least 4 digits.");
+                return;
+            }
 
-            // Encode the second application number
+            // Encode the application numbers
+            var encodedPart1 = encodeBase64(appNumber1);
             var encodedPart2 = encodeBase64(appNumber2);
 
             // Construct the URL using the encoded parts and separator "JTJj"
             var resultURL = "https://edistrict.up.gov.in/edistrictup/certVerify.aspx?application_no=" + encodedPart1 + "JTJj" + encodedPart2;
 
-            // Display the generated URL as a clickable link
-            var resultURLText = `<a href="${resultURL}" target="_blank">${resultURL}</a>`;
-            document.getElementById("resultURL").innerHTML = resultURLText;
-
-            // Create an iframe to display the URL
-            var iframeContainer = document.getElementById("iframeContainer");
-            iframeContainer.innerHTML = ''; // Clear any existing iframe
-            var iframe = document.createElement('iframe');
-            iframe.src = resultURL;
-            iframe.width = "100%";
-            iframe.height = "500px";
-            iframe.frameBorder = "0";
-            iframeContainer.appendChild(iframe);  // Append the iframe to the container
+            // Open the URL in a new tab
+            window.open(resultURL, '_blank');
         }
 
         // Function to change the last 4 digits of the second application number
@@ -91,6 +99,9 @@
                 // Update the full application number with the new last four digits
                 var newAppNumber2 = appNumber2.slice(0, -4) + newLastFour;
                 document.getElementById("appNumber2").value = newAppNumber2;  // Update the input field
+
+                // Now automatically generate the URL after changing the number
+                generateURL();  // This will call the function to open the URL in a new tab
             } else {
                 alert("The second application number must have at least 4 digits.");
             }
